@@ -1,0 +1,31 @@
+SRV_Country="CN"
+SRV_State="XiAn"
+SRV_Location="XiAn"
+SRV_Organization="DCITS"
+SRV_OrganizationUnit="Docker"
+SRV_CommonName="192.168.10.133"
+
+编辑/etc/pki/tls/openssl.cnf文件，[ v3_ca ]下添加
+
+subjectAltName=IP:192.168.10.133
+
+
+
+docker run -d -p 5000:5000 --restart=always --name registry \
+  -v /docker:/certs \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
+ docker.io/registry:2
+
+
+docker run --entrypoint htpasswd docker.io/registry:2 -Bbn admin 000000 > docker_registry_auth/htpasswd
+
+ docker run -d -p 5000:5000 --restart=always --name registry \
+  -v /docker_registry_auth:/auth \
+  -e "REGISTRY_AUTH=htpasswd" \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+  -v /docker:/certs \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
+  docker.io/registry:2

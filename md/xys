@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="/static/jquery.min.js"></script>
+<script src="/static/test.js"></script>
+</head>
+
+<body>
+<form class="form-horizontal" role="form" id='test32'>
+ <div class="form-group">
+    <label for="firstname" class="col-sm-2 control-label">名字</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="firstname" name='firstname' placeholder="请输入名字">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label">姓</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="lastname" name='lastname' placeholder="请输入姓">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="name">业务</label>
+    <select class="form-control" name="business" id="business" data-toggle="selectpicker">
+      <option value="0">请选择业务</option>
+      <option value="1">手机银行</option>
+      <option value="2">一年</option>
+      <option value="3">两年</option>
+      <option value="4">三年</option>
+    </select>
+  </div>
+    <div class="form-group">
+    <label for="name">积分</label>
+    <select  class="form-control" name="inte" id="inte" data-toggle="selectpicker" >
+      <option>0</option>
+    </select>
+  </div>
+<div id="uploadForm">
+    <input id="file" type="file"/>
+    <button id="upload" type="button" onclick="test3()">创建</button>
+</div>
+ </form> 
+</body>
+</html>
+
+---------
+
+function test3(){
+
+	var form = new FormData();
+	form.append("lastname", $('#lastname').val());
+	form.append("firstname", $('#firstname').val());
+	form.append("business", $('#business').find("option:selected").text());
+	form.append("inte", $('#inte').val());
+	form.append('file', $('#file')[0].files[0]);
+	// form.append("file", $('#uploadForm')[0].files[0]);
+
+	var settings = {
+	  "async": true,
+	  "crossDomain": true,
+	  "url": "http://127.0.0.1:8000/kunzd/upload/",
+	  "method": "POST",
+	  "headers": {
+	    "cache-control": "no-cache",
+	    "postman-token": "3c1d9b72-64d1-cf72-1c4e-b16155878c1a"
+	  },
+	  "processData": false,
+	  "contentType": false,
+	  "mimeType": "multipart/form-data",
+	  "data": form
+	}
+
+	$.ajax(settings).done(function (response) {
+	  console.log(response);
+	});
+};
+var array2 = { "0":0,"1": 100, "2": 200 ,"3": 300,"4":400,"5":500};
+$(function (){
+	$("#business").change(function(){
+		var business = $("#business").val();
+		var inte = array2[business]
+		$("#inte option").remove();
+		var html="";
+		html+="<option value='"+inte+"'>"+inte+"</option>";
+		$("#inte").html(html).selectpicker('refresh');
+	});
+});
